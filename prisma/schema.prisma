@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum TaskStatus {
+  pendente
+  em_andamento
+  concluida
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  nome         String   @db.VarChar(100)
+  email        String   @unique @db.VarChar(191)
+  senhaHash    String   @db.VarChar(255)
+  tasks        Task[]
+  created      DateTime @default(now())
+  updated      DateTime @updatedAt
+
+  @@map("usuarios")
+}
+
+model Task {
+  id          Int        @id @default(autoincrement())
+  title       String     @db.VarChar(150)
+  description String?    @db.Text
+  status      TaskStatus @default(pendente)
+  dueDate     DateTime?  @map("due_date") @db.Date
+  userId      Int        @map("user_id")
+  owner       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@map("tasks")
+}
