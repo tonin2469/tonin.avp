@@ -30,12 +30,26 @@ Na pasta do projeto:
 4. Confira `DATABASE_URL` e `TEST_DATABASE_URL` para corresponder ao MySQL do seu XAMPP.
 5. Gere o cliente do Prisma com `npm run db:generate`.
 6. Crie/atualize as tabelas aplicando as migrações: `npm run db:migrate`.
-7. (Opcional) Popule o banco com um usuário e tarefa de demonstração usando `npm run db:seed`. A senha é gerada aleatoriamente e mostrada uma única vez no terminal.
+7. (Opcional) Popule o banco com um usuário e tarefa de demonstração usando `npm run db:seed`. O login local é `antonio@av1.local` com senha `0808`.
 8. Inicie a API com `npm run dev` (desenvolvimento) ou `npm start`.
 
 A API fica disponível em `http://localhost:3000/api`. `GET /health` verifica a aplicação. A pasta `prisma/` contém o schema e as migrações versionadas. As migrações preservam usuários e tarefas ao atualizar o modelo de dados.
 
 As tabelas `usuarios` e `tasks` são criadas pelas migrações. Rode `npm run db:seed` para criar/atualizar a conta de demonstração `antonio@av1.local` e uma tarefa relacionada. A senha local definida para a demonstração é `0808` e somente o hash é armazenado. Essa senha é fraca: use-a apenas no ambiente local de avaliação e troque-a antes de qualquer implantação pública.
+
+## Frontend React
+
+O frontend fica na pasta `frontend/` e usa React, Vite e CSS próprio. Ele oferece cadastro e login, mantém o JWT durante a sessão, envia `Authorization: Bearer <token>` às rotas protegidas e permite listar, cadastrar, editar e excluir tarefas. Mensagens de erro/sucesso, carregamento, filtros e estado vazio também são exibidos pela interface.
+
+Com a API em execução na porta 3000, abra outro terminal:
+
+1. Acesse `frontend/` (`cd frontend`) e execute `npm install`.
+2. Copie `.env.example` para `.env` dentro da pasta `frontend`.
+3. Execute `npm run dev` e abra o endereço mostrado pelo Vite (normalmente `http://localhost:5173`).
+
+O Vite encaminha automaticamente as chamadas `/api` para `http://localhost:3000`, evitando a necessidade de habilitar CORS para desenvolvimento local. O frontend usa `VITE_API_BASE_URL=/api`; se a API estiver em outro endereço, ajuste `VITE_API_PROXY_TARGET` no `frontend/.env`. Para gerar os arquivos de produção, use `npm run build` dentro de `frontend/`.
+
+Para demonstrar, crie uma conta na tela ou entre com um usuário já cadastrado, crie uma tarefa, edite seu status/dados, exclua-a e encerre a sessão. O botão de cadastro também permite demonstrar erros como e-mail duplicado ou senha inválida.
 
 ## Variáveis de ambiente
 
@@ -117,3 +131,5 @@ Com o MySQL ativo no XAMPP e os dois bancos criados, execute `npm test`. Se usar
 - `src/config`: conexão Prisma.
 - `src/middleware`: autenticação JWT, validação e erros.
 - `tests`: testes HTTP de integração.
+- `frontend/src/components`: componentes React de autenticação, mensagens, formulário, lista e item de tarefa.
+- `frontend/src/api.js`: chamadas HTTP e envio do JWT à API.
